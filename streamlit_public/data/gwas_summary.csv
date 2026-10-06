@@ -1,0 +1,51 @@
+﻿Gene,Obesity_GWAS_Count,Significant_Association_Count,Top_Trait,Top_P_Value,Study_Count,Largest_Sample_Size,Ancestry,Top_Variant
+GPR75,3,3,Weight,2e-15,3,153950,Korean ancestry individuals,rs80328470
+MC4R,225,191,Body mass index,2e-213,109,1122049,European ancestry individuals,rs571312
+LEP,24,17,circulating leptin levels adjusted for BMI,1.0000000000000001e-23,20,56708,"European ancestry, African American or Afro-Caribbean, East Asian ancestry, Hispanic or Latin American individuals",rs791600
+LEPR,37,33,BMI at 6 months old,6e-34,28,24551,European ancestry individuals,rs2767486
+POMC,9,8,Weight,5e-27,9,928679,"East Asian ancestry individuals, 420,829 European ancestry individuals",rs934778
+PPARG,256,233,Sex hormone-binding globulin levels adjusted for BMI,2.9999999999999997e-67,97,389354,European ancestry individuals,rs1801282
+FTO,432,398,Body mass index or osteoarthritis (pleiotropy),0.0,246,1633524,"European ancestry BMI individuals, 177,517 European ancestry osteoarthritis cases, 649,173 European ancestry controls",rs55872725
+SH2B1,54,53,"Weight (maximum, inv-normal transformed)",4e-108,44,1122049,European ancestry individuals,rs62037364
+PCSK1,11,11,Body mass index,2e-25,11,1122049,European ancestry individuals,rs6234
+ADCY3,161,144,Childhood body mass index,1e-117,121,1122049,European ancestry individuals,rs6749422
+GIPR,119,109,Body mass index,4e-111,99,928679,"East Asian ancestry individuals, 420,829 European ancestry individuals",rs35560038
+BDNF,138,117,Body mass index,8e-135,91,1122049,European ancestry individuals,rs6265
+SIM1,64,63,"Weight (mean, inv-normal transformed)",8e-41,50,425541,European ancestry individuals,rs17789218
+TCF7L2,153,141,Type 2 diabetes mellitus adjusted for BMI or coronary artery disease (pleiotropy),2e-218,112,1739998,"European ancestry type 2 diabetes adjusted for BMI cases, 181,522 European ancestry coronary artery disease cases, 1,508,065 European ancestry controls",rs35519679
+KSR2,18,15,Body mass index,2e-16,17,1122049,European ancestry individuals,rs56214831
+MC3R,0,0,,,0,,,
+MRAP2,0,0,,,0,,,
+TMEM18,247,224,Body mass index,1e-215,155,1122049,European ancestry individuals,rs6751993
+SLC39A8,120,110,"Body mass index (BMI, maximum, inv-normal transformed)",6.0000000000000005e-117,85,1122049,European ancestry individuals,rs13107325
+PDE3B,21,20,Serum 25-Hydroxyvitamin D levels (conditioned on BMI),1e-300,15,618375,"European ancestry individuals, 138,792 Hispanic or Latin American individuals, 8,948 African ancestry individuals, 2,203 East Asian ancestry individuals, 10,115 South Asian ancestry individuals",rs116970203
+HMGA2,59,47,"Weight (mean, inv-normal transformed)",1e-149,46,425541,European ancestry individuals,rs8756
+CALCR,47,34,"Weight (mean, inv-normal transformed)",1e-17,34,694649,European ancestry individuals,rs2251307
+TFAP2B,118,113,Body mass index,2.0000000000000001e-112,98,1122049,European ancestry individuals,rs2076308
+SEC16B,242,223,Body mass index,4e-215,161,1122049,European ancestry individuals,rs539515
+FAIM2,79,75,"Weight (mean, inv-normal transformed)",7e-135,74,425541,European ancestry individuals,rs7132908
+ZFHX3,47,46,"Weight (maximum, inv-normal transformed)",1e-43,35,1122049,European ancestry individuals,rs7498798
+NRXN3,113,103,Body mass index,2e-68,66,1122049,European ancestry individuals,rs10146997
+ETV5,81,71,"Body mass index (BMI, mean, inv-normal transformed)",1e-96,60,650000,European ancestry individuals,rs76880877
+NEGR1,20,16,Body mass index,2e-18,17,1122049,European ancestry individuals,rs12725081
+NPC1,55,48,Body mass index,1e-41,48,1122049,European ancestry individuals,rs891387
+ADCY5,49,44,Sex hormone-binding globulin levels adjusted for BMI and heel estimated bone mineral density,1.0000000000000001e-23,43,1122049,European ancestry individuals,rs11719201
+SPARC,6,6,Body mass index,1e-21,6,1122049,European ancestry individuals,rs41290587
+RPTOR,62,56,"Weight (maximum, inv-normal transformed)",1e-41,48,425541,European ancestry individuals,rs11150745
+KCTD15,51,42,Body mass index,7.999999999999997e-32,38,1122049,European ancestry individuals,rs29940
+DPP9,0,0,,,0,,,
+GNPDA2,0,0,,,0,,,
+ADCY9,114,95,"Weight (maximum, inv-normal transformed)",4e-96,90,928679,"East Asian ancestry individuals, 420,829 European ancestry individuals",rs879620
+MAP2K5,106,98,Body mass index,1e-79,78,1122049,European ancestry individuals,rs28670272
+FGF19,10,10,"Body mass index (BMI, mean, inv-normal transformed)",7.9999999999999985e-25,10,694649,European ancestry individuals,rs1789171
+CCND2,35,34,Sex hormone-binding globulin levels adjusted for BMI and heel estimated bone mineral density,7.000000000000001e-133,34,831753,European ancestry individuals,rs76895963
+LINGO2,149,131,Body mass index,2.0000000000000002e-75,83,1122049,European ancestry individuals,rs10968576
+ANO4,1,0,Vitamin D levels (adjusted for BMI) x vegetarianism interaction,8e-06,1,140871,European ancestry individuals,rs150333455
+UBR2,3,2,Body mass index,1e-09,3,523818,"European ancestry individuals, 163,835 East Asian ancestry individuals",rs9296396
+ROBO1,14,13,Waist-hip ratio,3.0000000000000014e-13,10,1122049,European ancestry individuals,rs4681011
+ANKRD27,2,2,Body mass index,7e-13,2,928679,"East Asian ancestry individuals, 420,829 European ancestry individuals",rs9636114
+BLTP1,0,0,,,0,,,
+CRTC1,67,55,"Weight (maximum, inv-normal transformed)",6.000000000000001e-63,51,1122049,European ancestry individuals,rs10404726
+MCM6,25,23,"Weight (maximum, inv-normal transformed)",4e-85,24,425541,European ancestry individuals,rs4988235
+SYT10,17,17,"Weight (minimum, inv-normal transformed)",1e-33,17,1122049,European ancestry individuals,rs6488140
+COBLL1,334,305,Waist-hip index,5.0000000000000006e-127,131,389354,European ancestry individuals,rs13389219
