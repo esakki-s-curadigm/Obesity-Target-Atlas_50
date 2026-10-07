@@ -47,6 +47,10 @@ and invite viewers instead, subject to the current Community Cloud account optio
 - Sortable/filterable tables and CSV downloads. P-value columns throughout the
   GWAS, priority summary, and integrated master views display in scientific
   notation; downloaded CSV values remain unchanged.
+- Recognized single identifiers link to their source records, and gene symbols
+  link to a human-constrained NCBI Gene search. Original CSV values are retained
+  in downloads; table columns with multiple IDs remain plain text to avoid
+  directing users to only one of several records or hiding other identifiers.
 - Curated source-specific subsets; the raw CSV files remain in the project results
   folder and are not part of this deployment package
 

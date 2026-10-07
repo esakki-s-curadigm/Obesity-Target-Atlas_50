@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import pandas as pd
 import plotly.express as px
@@ -391,6 +392,69 @@ def p_value_formatters(frame: pd.DataFrame) -> dict[str, Any]:
     return formatters
 
 
+def identifier_url(column: str, value: Any) -> str | None:
+    if pd.isna(value):
+        return None
+    identifier = str(value).strip()
+    column_name = column.casefold()
+    if not identifier or "|" in identifier:
+        return None
+
+    if "ensembl" in column_name and "id" in column_name:
+        if re.fullmatch(r"ENS[A-Z]*\d{11}", identifier):
+            return f"https://www.ensembl.org/id/{identifier}"
+    elif "uniprot" in column_name and "id" in column_name:
+        if re.fullmatch(
+            r"(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|"
+            r"[A-NR-Z][0-9][A-Z][A-Z0-9]{2}[0-9])",
+            identifier,
+        ):
+            return f"https://www.uniprot.org/uniprotkb/{identifier}"
+    elif "ncbi_gene_id" in column_name:
+        if identifier.isdigit():
+            return f"https://www.ncbi.nlm.nih.gov/gene/{identifier}"
+    elif "chembl" in column_name and "target" in column_name and "id" in column_name:
+        if re.fullmatch(r"CHEMBL\d+", identifier):
+            return f"https://www.ebi.ac.uk/chembl/target_report_card/{identifier}"
+    elif "compound_id" in column_name and re.fullmatch(r"CHEMBL\d+", identifier):
+        return f"https://www.ebi.ac.uk/chembl/molecule_report_card/{identifier}/"
+    elif "pmid" in column_name or "pubmed_id" in column_name:
+        identifier = re.sub(r"\.0+$", "", identifier)
+        if identifier.isdigit():
+            return f"https://pubmed.ncbi.nlm.nih.gov/{identifier}"
+    elif "rsid" in column_name or (
+        "variant" in column_name and re.fullmatch(r"rs\d+", identifier)
+    ):
+        if re.fullmatch(r"rs\d+", identifier):
+            return f"https://www.ncbi.nlm.nih.gov/snp/{identifier}"
+    elif "study_id" in column_name and re.fullmatch(r"GCST\d+", identifier):
+        return f"https://www.ebi.ac.uk/gwas/studies/{identifier}"
+    elif "efo_id" in column_name:
+        match = re.fullmatch(r"(EFO|OBA)_(\d+)", identifier)
+        if match:
+            ontology = "efo" if match.group(1) == "EFO" else "oba"
+            return (
+                f"https://www.ebi.ac.uk/ols4/ontologies/{ontology}/classes"
+                f"?obo_id={identifier}#{identifier}"
+            )
+    elif "reactome_id" in column_name and re.fullmatch(
+        r"R-[A-Z]+-\d+", identifier
+    ):
+        return f"https://reactome.org/content/detail/{identifier}"
+    elif "disease_id" in column_name and re.fullmatch(
+        r"MONDO_\d+", identifier
+    ):
+        return f"https://platform.opentargets.org/disease/{identifier}"
+    elif column_name == "gene" or column_name.endswith("_mapped_gene"):
+        if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", identifier):
+            query = quote(f"{identifier}[Gene Name] AND Homo sapiens[Organism]")
+            return (
+                f"https://www.ncbi.nlm.nih.gov/gene/?term={query}"
+                f"#{quote(identifier)}"
+            )
+    return None
+
+
 def render_dataset_table(
     key: str, label: str, gene: str, query: str
 ) -> None:
@@ -431,13 +495,46 @@ def render_dataset_table(
         )
         page_data = filtered.iloc[start:end].copy()
         table_formatters = p_value_formatters(page_data)
+        link_columns: dict[str, Any] = {}
         for column in page_data.columns:
             if "p_value" in str(column).casefold() and not pd.api.types.is_numeric_dtype(
                 page_data[column]
             ):
                 page_data[column] = page_data[column].map(format_p_value_text)
+            if any(
+                term in str(column).casefold()
+                for term in (
+                    "ensembl",
+                    "uniprot",
+                    "ncbi_gene_id",
+                    "chembl",
+                    "compound_id",
+                    "pmid",
+                    "pubmed_id",
+                    "rsid",
+                    "variant",
+                    "study_id",
+                    "efo_id",
+                    "reactome_id",
+                    "disease_id",
+                )
+            ) or str(column).casefold() in {"gene", "mapped_gene"}:
+                urls = page_data[column].map(
+                    lambda value, name=column: identifier_url(name, value)
+                )
+                non_empty = page_data[column].map(
+                    lambda value: pd.notna(value) and bool(str(value).strip())
+                )
+                if non_empty.any() and urls[non_empty].notna().all():
+                    link_columns[column] = st.column_config.LinkColumn(
+                        column,
+                        display_text=r".*(?:/|#)([^/?#]+)$",
+                        help="Open this identifier in its source database.",
+                    )
+                    page_data[column] = urls
         st.dataframe(
             page_data.style.format(table_formatters, na_rep=""),
+            column_config=link_columns,
             hide_index=True,
             width="stretch",
             height=min(560, 135 + page_size * 34),
