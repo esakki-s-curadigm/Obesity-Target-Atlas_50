@@ -306,7 +306,7 @@ def render_overview_charts(
                 colorscale=[
     [0.0, "#f1f7f3"],
     [0.2, "#d7ebdd"],
-    [0.4, "#afd5bb"],
+    [0.4, "#afd5bb"], 
     [0.6, "#7fbb94"],
     [0.75, "#1e7964"],
     [0.9, "#2f7fae"],
@@ -395,12 +395,22 @@ def render_dataset_table(
             key=f"download_{key}",
             width="stretch",
         )
+        table_column_config = None
+        if key == "gwas":
+            table_column_config = {
+                "P_Value": st.column_config.NumberColumn(
+                    "P_Value",
+                    format="%.2e",
+                    help="GWAS association p-value shown in scientific notation.",
+                )
+            }
         st.dataframe(
             filtered.iloc[start:end],
             hide_index=True,
             width="stretch",
             height=min(560, 135 + page_size * 34),
             key=f"table_{key}",
+            column_config=table_column_config,
         )
         previous_col, page_col, next_col = st.columns([1, 1, 1])
         with previous_col:
