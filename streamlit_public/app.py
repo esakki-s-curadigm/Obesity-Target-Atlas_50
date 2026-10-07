@@ -51,9 +51,11 @@ VIEW_DESCRIPTIONS = {
     "uniprot": "Curated protein annotations, function, localization, disease notes, and gene identifiers.",
     "open_targets": "Target–obesity association and evidence component scores.",
     "gwas": "Prioritized obesity-trait associations, significance, variants, sample size, and study details.",
+    "gwas_summary": "One-row-per-gene summary of significant obesity-related GWAS associations, top traits, variants, and study coverage.",
     "pubmed": "Gene-specific obesity literature prioritized for direct relevance and evidence type.",
     "reactome": "Metabolic pathway names, hierarchy, and biological context.",
     "gtex": "Expression records in obesity-relevant tissues, plus the per-gene tissue summary.",
+    "gtex_summary": "One-row-per-gene summary of the highest obesity-relevant GTEx tissue expression and tissue coverage.",
     "chembl": "Prioritized target–compound activity and development records; activity does not establish obesity efficacy.",
     "master": "Wide source-consolidated master table. Scroll horizontally to inspect all fields.",
 }
