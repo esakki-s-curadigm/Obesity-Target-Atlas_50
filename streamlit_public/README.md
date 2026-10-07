@@ -44,7 +44,9 @@ and invite viewers instead, subject to the current Community Cloud account optio
   Hover over chart marks to see evidence details; use the filters to focus on a gene.
 - Integrated master table and source-specific tabs for UniProt, Open Targets,
   GWAS Catalog, PubMed, Reactome, GTEx, and ChEMBL
-- Sortable/filterable tables and CSV downloads
+- Sortable/filterable tables and CSV downloads. P-value columns throughout the
+  GWAS, priority summary, and integrated master views display in scientific
+  notation; downloaded CSV values remain unchanged.
 - Curated source-specific subsets; the raw CSV files remain in the project results
   folder and are not part of this deployment package
 

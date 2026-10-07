@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -359,6 +360,37 @@ def change_table_page(delta: int) -> None:
     )
 
 
+def format_p_value_text(value: Any) -> str:
+    if pd.isna(value):
+        return ""
+    parts = []
+    for item in str(value).split("|"):
+        item = item.strip()
+        match = re.fullmatch(
+            r"([<>]=?)?\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)",
+            item,
+        )
+        if match:
+            try:
+                item = f"{match.group(1) or ''}{float(match.group(2)):.2e}"
+            except (OverflowError, ValueError):
+                pass
+        parts.append(item)
+    return " | ".join(parts)
+
+
+def p_value_formatters(frame: pd.DataFrame) -> dict[str, Any]:
+    formatters: dict[str, Any] = {}
+    for column in frame.columns:
+        if "p_value" not in str(column).casefold():
+            continue
+        if pd.api.types.is_numeric_dtype(frame[column]):
+            formatters[column] = lambda value: (
+                "" if pd.isna(value) else f"{value:.2e}"
+            )
+    return formatters
+
+
 def render_dataset_table(
     key: str, label: str, gene: str, query: str
 ) -> None:
@@ -397,30 +429,19 @@ def render_dataset_table(
             key=f"download_{key}",
             width="stretch",
         )
-        table_column_config = None
-        if key == "gwas":
-            table_column_config = {
-                "P_Value": st.column_config.NumberColumn(
-                    "P_Value",
-                    format="%.2e",
-                    help="GWAS association p-value shown in scientific notation.",
-                )
-            }
-        elif key == "master":
-            table_column_config = {
-                "GWAS_Top_P_Value": st.column_config.NumberColumn(
-                    "GWAS_Top_P_Value",
-                    format="%.2e",
-                    help="Top GWAS association p-value shown in scientific notation.",
-                )
-            }
+        page_data = filtered.iloc[start:end].copy()
+        table_formatters = p_value_formatters(page_data)
+        for column in page_data.columns:
+            if "p_value" in str(column).casefold() and not pd.api.types.is_numeric_dtype(
+                page_data[column]
+            ):
+                page_data[column] = page_data[column].map(format_p_value_text)
         st.dataframe(
-            filtered.iloc[start:end],
+            page_data.style.format(table_formatters, na_rep=""),
             hide_index=True,
             width="stretch",
             height=min(560, 135 + page_size * 34),
             key=f"table_{key}",
-            column_config=table_column_config,
         )
         previous_col, page_col, next_col = st.columns([1, 1, 1])
         with previous_col:
