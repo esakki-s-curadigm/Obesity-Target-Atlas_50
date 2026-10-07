@@ -51,6 +51,9 @@ and invite viewers instead, subject to the current Community Cloud account optio
   link to a human-constrained NCBI Gene search. Original CSV values are retained
   in downloads; table columns with multiple IDs remain plain text to avoid
   directing users to only one of several records or hiding other identifiers.
+- Function annotations are deduplicated and shown as concise points in the
+  tables. Select a row to inspect the full statements and their cited PubMed IDs;
+  CSV downloads retain the original annotations.
 - Curated source-specific subsets; the raw CSV files remain in the project results
   folder and are not part of this deployment package
 

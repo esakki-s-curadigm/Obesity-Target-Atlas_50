@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from textwrap import shorten
 from typing import Any
 from urllib.parse import quote
 
@@ -392,6 +393,49 @@ def p_value_formatters(frame: pd.DataFrame) -> dict[str, Any]:
     return formatters
 
 
+def function_points(value: Any) -> list[tuple[str, list[str]]]:
+    if pd.isna(value):
+        return []
+
+    points: dict[str, tuple[str, list[str]]] = {}
+    for raw_point in re.split(r"(?<=[.!?])\s+(?=[A-Z(])", str(value).strip()):
+        point = raw_point.strip()
+        if not point:
+            continue
+        pmids = list(dict.fromkeys(re.findall(r"\bPubMed:(\d+)\b", point)))
+        text = re.sub(r"\(?\s*PubMed:\d+(?:,\s*PubMed:\d+)*\s*\)?", "", point)
+        text = re.sub(r"\s+([,.;:])", r"\1", text).strip(" ,;")
+        if not text:
+            continue
+        normalized = re.sub(r"[^a-z0-9]+", "", text.casefold())
+        if normalized in points:
+            existing_text, existing_pmids = points[normalized]
+            points[normalized] = (
+                existing_text,
+                list(dict.fromkeys(existing_pmids + pmids)),
+            )
+        else:
+            points[normalized] = (text, pmids)
+    return list(points.values())
+
+
+def compact_function(value: Any, max_point_chars: int = 100) -> str:
+    compact_points = []
+    for text, pmids in function_points(value):
+        preview = shorten(text, width=max_point_chars, placeholder="…")
+        if pmids:
+            pmid_preview = ", ".join(pmids[:2])
+            if len(pmids) > 2:
+                pmid_preview += f", +{len(pmids) - 2}"
+            preview = f"{preview} [PMID: {pmid_preview}]"
+        compact_points.append(preview)
+    return " · ".join(compact_points)
+
+
+def is_function_annotation(column: str) -> bool:
+    return column.casefold() in {"function", "uniprotevidence_function"}
+
+
 def identifier_url(column: str, value: Any) -> str | None:
     if pd.isna(value):
         return None
@@ -494,6 +538,22 @@ def render_dataset_table(
             width="stretch",
         )
         page_data = filtered.iloc[start:end].copy()
+        raw_page_data = page_data.copy()
+        function_columns = [
+            column for column in page_data.columns if is_function_annotation(column)
+        ]
+        duplicate_function_column = (
+            "Function" in raw_page_data.columns
+            and "UniProtEvidence_Function" in raw_page_data.columns
+            and raw_page_data["Function"].fillna("").equals(
+                raw_page_data["UniProtEvidence_Function"].fillna("")
+            )
+        )
+        for column in function_columns:
+            page_data[column] = page_data[column].map(compact_function)
+        if duplicate_function_column:
+            page_data = page_data.drop(columns=["UniProtEvidence_Function"])
+            function_columns.remove("UniProtEvidence_Function")
         table_formatters = p_value_formatters(page_data)
         link_columns: dict[str, Any] = {}
         for column in page_data.columns:
@@ -532,14 +592,47 @@ def render_dataset_table(
                         help="Open this identifier in its source database.",
                     )
                     page_data[column] = urls
-        st.dataframe(
+        table_event = st.dataframe(
             page_data.style.format(table_formatters, na_rep=""),
             column_config=link_columns,
             hide_index=True,
             width="stretch",
             height=min(560, 135 + page_size * 34),
             key=f"table_{key}",
+            on_select="rerun" if function_columns else "ignore",
+            selection_mode="single-row" if function_columns else "multi-row",
         )
+        if function_columns:
+            st.caption("Select a row to inspect full Function statements and citations.")
+        if function_columns and table_event.selection.rows:
+            selected_row = raw_page_data.iloc[table_event.selection.rows[0]]
+            selected_gene = str(selected_row.get("Gene", "selected gene"))
+            detail_points: dict[str, tuple[str, list[str]]] = {}
+            for column in function_columns:
+                for text, pmids in function_points(selected_row.get(column)):
+                    normalized = re.sub(r"[^a-z0-9]+", "", text.casefold())
+                    if normalized in detail_points:
+                        existing_text, existing_pmids = detail_points[normalized]
+                        detail_points[normalized] = (
+                            existing_text,
+                            list(dict.fromkeys(existing_pmids + pmids)),
+                        )
+                    else:
+                        detail_points[normalized] = (text, pmids)
+            if detail_points:
+                st.markdown(f"#### Function details — {selected_gene}")
+                st.caption(
+                    "Distinct full statements from the source annotation. "
+                    "PubMed references are linked where supplied by that source."
+                )
+                for text, pmids in detail_points.values():
+                    st.markdown(f"- {text}")
+                    if pmids:
+                        sources = " · ".join(
+                            f"[PMID:{pmid}]({identifier_url('PMID', pmid)})"
+                            for pmid in pmids
+                        )
+                        st.markdown(f"  Sources: {sources}")
         previous_col, page_col, next_col = st.columns([1, 1, 1])
         with previous_col:
             st.button(
