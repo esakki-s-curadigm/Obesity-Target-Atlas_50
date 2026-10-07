@@ -406,6 +406,14 @@ def render_dataset_table(
                     help="GWAS association p-value shown in scientific notation.",
                 )
             }
+        elif key == "master":
+            table_column_config = {
+                "GWAS_Top_P_Value": st.column_config.NumberColumn(
+                    "GWAS_Top_P_Value",
+                    format="%.2e",
+                    help="Top GWAS association p-value shown in scientific notation.",
+                )
+            }
         st.dataframe(
             filtered.iloc[start:end],
             hide_index=True,
